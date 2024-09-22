@@ -42,113 +42,122 @@ fun CurrencyConverterUI(modifier: Modifier = Modifier) {
     var inputAmount by remember { mutableStateOf("") }
     var convertedAmount by remember { mutableStateOf("") }
 
-    // These are placeholders, the dropdown functionality will come later
-    val fromCurrency = "USD"
-    val toCurrency = "USD"
-
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Top section with currency selection dropdowns and converted amount box
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-        ) {
-            // Dropdown menus for currency selection, placeholders for now
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // From currency dropdown placeholder
-                TextField(
-                    value = fromCurrency,
-                    onValueChange = {},
-                    label = { Text("From") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
+        CurrencySelectionSection(
+            modifier = Modifier.weight(0.3f)  // Reduced weight
+        )
+        Spacer(modifier = Modifier.height(16.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // To currency dropdown placeholder
-                TextField(
-                    value = toCurrency,
-                    onValueChange = {},
-                    label = { Text("To") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Box for displaying the converted amount
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(8.dp))
-                    .border(
-                        BorderStroke(2.dp, Color.Gray),
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Muunnettu summa:",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = convertedAmount,
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        }
+        ConvertedAmountBox(
+            convertedAmount = convertedAmount,
+            modifier = Modifier.weight(0.2f)  // Reduced weight even more
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Bottom section for input and convert button
-        Column(
+        InputAndConvertButton(
+            inputAmount = inputAmount,
+            onInputAmountChange = { inputAmount = it },
+            onConvertClick = {
+                convertedAmount = if (inputAmount.isNotEmpty()) inputAmount else "0"
+            },
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .fillMaxWidth()
+                .height(150.dp)  // Fixed height for input and button section to avoid being squeezed
+        )
+    }
+}
+
+@Composable
+fun CurrencySelectionSection(modifier: Modifier = Modifier) {
+    val fromCurrency = "USD"  // Placeholder
+    val toCurrency = "USD"    // Placeholder
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // From currency dropdown placeholder
+        CurrencyDropdown(label = "From", selectedCurrency = fromCurrency)
+        Spacer(modifier = Modifier.height(16.dp))
+        // To currency dropdown placeholder
+        CurrencyDropdown(label = "To", selectedCurrency = toCurrency)
+    }
+}
+
+@Composable
+fun CurrencyDropdown(label: String, selectedCurrency: String) {
+    TextField(
+        value = selectedCurrency,
+        onValueChange = {},
+        label = { Text(label) },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+fun ConvertedAmountBox(convertedAmount: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()  // Use fillMaxWidth to prevent it from taking too much height
+            .clip(RoundedCornerShape(8.dp))
+            .border(
+                BorderStroke(2.dp, Color.Gray),
+                shape = RoundedCornerShape(8.dp)
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Valuuttamuunnin",
-                style = MaterialTheme.typography.titleLarge
+                text = "Muunnettu summa:",
+                style = MaterialTheme.typography.bodyLarge
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TextField(
-                value = inputAmount,
-                onValueChange = { inputAmount = it },
-                label = { Text("Syötä summa") },
-                modifier = Modifier.fillMaxWidth()
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = convertedAmount,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold
             )
+        }
+    }
+}
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    convertedAmount = if (inputAmount.isNotEmpty()) inputAmount else "0"
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Muunna")
-            }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InputAndConvertButton(
+    inputAmount: String,
+    onInputAmountChange: (String) -> Unit,
+    onConvertClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Valuuttamuunnin",
+            style = MaterialTheme.typography.titleLarge
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        TextField(
+            value = inputAmount,
+            onValueChange = onInputAmountChange,
+            label = { Text("Syötä summa") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = onConvertClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Muunna")
         }
     }
 }
