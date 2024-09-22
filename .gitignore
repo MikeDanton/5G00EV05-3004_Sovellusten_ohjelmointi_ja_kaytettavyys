@@ -1,0 +1,89 @@
+# Android Studio
+.gradle/
+local.properties
+/.idea/caches/
+/.idea/libraries/
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+/.idea/gradle.xml
+/.idea/misc.xml
+/.idea/copyright/
+.idea/vcs.xml
+/.idea/inspectionProfiles
+/.idea/codeStyles
+/.idea/runConfigurations/
+/.idea/
+*.iml
+*.hprof
+*.log
+*.xml
+*.json
+
+# Android Studio specific files
+.idea/
+build/
+captures/
+.externalNativeBuild/
+cxx/
+.idea/workspace.xml
+.idea/modules.xml
+.idea/navEditor.xml
+.idea/androidProfiles.xml
+.idea/copyright
+local.properties
+/.idea/gradle.xml
+/.idea/libraries/
+/.idea/misc.xml
+/.idea/caches/
+/.idea/copyright/
+/.idea/assetWizardSettings.xml
+
+# Android specific
+.DS_Store
+fastlane/metadata/android
+fastlane/metadata/android
+*/build/
+*/.gradle/
+/gradle/wrapper/gradle-wrapper.properties
+gradle/wrapper/gradle-wrapper.jar
+
+# Native/Kotlin specific (JetBrains IDEA)
+.idea/workspace.xml
+.idea/libraries
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/misc.xml
+.idea/dictionaries
+.idea/jsLibraryMappings.xml
+out/
+*.iws
+*.iml
+*.ipr
+
+# Exclude gradle binary files
+**/gradle-wrapper.jar
+**/gradlew
+**/gradlew.bat
+
+# Exclude JetBrains IDE specific project files
+.idea/
+*.iml
+*.ipr
+.idea/**/workspace.xml
+
+# Log and build files
+*.log
+build/
+
+# OS specific files
+*.DS_Store
+*.class
+*.swp
+
+# Kotlin specific
+build/
+out/
