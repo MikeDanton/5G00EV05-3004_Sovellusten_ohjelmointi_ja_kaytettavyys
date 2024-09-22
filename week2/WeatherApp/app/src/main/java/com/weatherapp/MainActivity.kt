@@ -10,13 +10,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.weatherapp.ui.theme.WeatherAppTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import com.weatherapp.R
 
 class MainActivity : ComponentActivity() {
@@ -24,7 +24,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             WeatherAppTheme {
-                // Call the main UI function
                 WeatherAppUI()
             }
         }
@@ -50,9 +49,9 @@ fun WeatherAppUI() {
 
         // Weather icon (e.g., sunny)
         Image(
-            painter = painterResource(id = R.drawable.sunny),  // Replace with your actual image
+            painter = painterResource(id = R.drawable.sunny),  // Ensure sunny.png is in res/drawable
             contentDescription = "Sunny",
-            modifier = Modifier.size(100.dp)
+            modifier = Modifier.size(120.dp)  // Slightly increased the size for better visibility
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -78,18 +77,23 @@ fun WeatherAppUI() {
             fontSize = 18.sp
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))  // Added a bit more spacing before the button
 
         // Refresh button with a refresh icon
         Button(
-            onClick = { /* Refresh the weather data */ },
-            modifier = Modifier.size(50.dp)
+            onClick = { /* No functionality */ },
+            modifier = Modifier.size(56.dp),  // Adjust button size
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFFF00FF)   // Magenta background color
+            )
         ) {
             Icon(
-                imageVector = Icons.Default.Refresh,
-                contentDescription = "Refresh"
+                painter = painterResource(id = R.drawable.refresh),  // Use your custom refresh drawable
+                contentDescription = "Refresh",
+                modifier = Modifier.size(24.dp)  // Adjust icon size if needed
             )
         }
+
     }
 }
 
