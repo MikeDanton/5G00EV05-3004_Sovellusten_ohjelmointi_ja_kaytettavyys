@@ -24,7 +24,6 @@ fun SettingsScreen(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
     ) {
         Text(text = "Settings", fontSize = 24.sp, modifier = Modifier.padding(bottom = 16.dp))
 
-        // Temperature Unit Toggle
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Temperature Unit: ")
             Spacer(modifier = Modifier.width(8.dp))
@@ -37,7 +36,5 @@ fun SettingsScreen(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-
-        // Add additional settings here, like updating intervals, location preferences, etc.
     }
 }

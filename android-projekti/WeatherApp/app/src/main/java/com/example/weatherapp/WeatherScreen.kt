@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,9 +19,13 @@ fun WeatherScreen(
     viewModel: WeatherViewModel,
     onNavigateToSettings: () -> Unit,
     city: String,
-    apiKey: String,
     modifier: Modifier = Modifier
 ) {
+    // Launch fetchWeather only on first composition
+    LaunchedEffect(Unit) {
+        viewModel.fetchWeather(city)
+    }
+
     val weather = viewModel.weather.collectAsState().value
     val isLoading = viewModel.isLoading.collectAsState().value
     val errorMessage = viewModel.errorMessage.collectAsState().value
@@ -41,7 +46,7 @@ fun WeatherScreen(
             errorMessage != null -> {
                 Text(text = errorMessage, color = Color.Red)
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = { viewModel.fetchWeather(city, apiKey) }) {
+                Button(onClick = { viewModel.fetchWeather(city) }) {
                     Text("Retry")
                 }
             }

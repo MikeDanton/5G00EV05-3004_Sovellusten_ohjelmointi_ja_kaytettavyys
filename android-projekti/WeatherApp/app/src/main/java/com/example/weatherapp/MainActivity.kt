@@ -47,8 +47,7 @@ fun WeatherApp(viewModel: WeatherViewModel) {
                         viewModel = viewModel,
                         modifier = Modifier.padding(padding),
                         onNavigateToSettings = { navController.navigate("settingsScreen") },
-                        city = "Tampere",
-                        apiKey = WeatherViewModel.API_KEY
+                        city = "Tampere"
                     )
                 }
                 composable("settingsScreen") {
