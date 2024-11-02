@@ -5,10 +5,12 @@ import retrofit2.http.Query
 
 // Data classes for forecast and additional information
 data class WeatherResponse(
+    val name: String,
     val weather: List<WeatherDescription>,
     val main: MainData,
     val wind: WindData
 )
+
 
 data class WeatherDescription(val description: String)
 data class MainData(val temp: Double, val humidity: Int, val pressure: Int) // Add more fields if needed
@@ -40,6 +42,14 @@ interface WeatherApiService {
     @GET("data/2.5/weather")
     suspend fun getWeather(
         @Query("q") city: String,
+        @Query("appid") apiKey: String,
+        @Query("units") units: String = "metric"
+    ): WeatherResponse
+
+    @GET("data/2.5/weather")
+    suspend fun getWeatherByCoordinates(
+        @Query("lat") latitude: Double,
+        @Query("lon") longitude: Double,
         @Query("appid") apiKey: String,
         @Query("units") units: String = "metric"
     ): WeatherResponse

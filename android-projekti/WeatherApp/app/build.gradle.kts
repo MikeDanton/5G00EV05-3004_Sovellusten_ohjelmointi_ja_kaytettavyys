@@ -66,9 +66,14 @@ dependencies {
     // DataStore preferences
     implementation(libs.datastore.preferences)
 
-    // Other dependencies...
+    // Play Services Location and Coroutines Play Services
+    implementation(libs.play.services.location)
+    implementation(libs.kotlinx.coroutines.play.services)
+
+    // Navigation Compose
     implementation(libs.androidx.navigation.compose)
 
+    // Test dependencies
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

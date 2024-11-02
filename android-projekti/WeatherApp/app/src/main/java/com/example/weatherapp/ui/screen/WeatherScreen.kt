@@ -21,13 +21,16 @@ import com.example.weatherapp.network.WeatherResponse
 fun WeatherScreen(
     viewModel: WeatherViewModel,
     onNavigateToSettings: () -> Unit,
+    onFetchWeatherByLocation: () -> Unit, // Callback to fetch weather by location
     city: String,
     modifier: Modifier = Modifier
 ) {
+    // Fetch weather for the default city when the screen is first displayed
     LaunchedEffect(Unit) {
         viewModel.fetchWeather(city)
     }
 
+    // Collect UI states from the ViewModel
     val weather = viewModel.weather.collectAsState().value
     val isLoading = viewModel.isLoading.collectAsState().value
     val errorMessage = viewModel.errorMessage.collectAsState().value
@@ -38,6 +41,7 @@ fun WeatherScreen(
     val showHumidity = viewModel.showHumidity.collectAsState().value
     val showPressure = viewModel.showPressure.collectAsState().value
 
+    // Layout for the Weather Screen
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -45,20 +49,27 @@ fun WeatherScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Settings Icon Button
         IconButton(onClick = onNavigateToSettings) {
             Icon(Icons.Default.Settings, contentDescription = stringResource(id = R.string.settings))
         }
 
+        // Button to fetch weather by current location
+        Button(onClick = onFetchWeatherByLocation, modifier = Modifier.padding(vertical = 8.dp)) {
+            Text("Get Weather by Location")
+        }
+
+        // Display different content based on loading/error states
         when {
-            isLoading -> CircularProgressIndicator()
-            errorMessage != null -> {
+            isLoading -> CircularProgressIndicator()  // Show loading indicator
+            errorMessage != null -> {                 // Show error message and retry button
                 Text(text = errorMessage, color = Color.Red)
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(onClick = { viewModel.fetchWeather(city) }) {
                     Text(stringResource(id = R.string.retry))
                 }
             }
-            weather != null -> WeatherDisplay(
+            weather != null -> WeatherDisplay(        // Show weather data
                 viewModel = viewModel,
                 weather = weather,
                 showTemperature = showTemperature,
@@ -81,6 +92,7 @@ fun WeatherDisplay(
     showHumidity: Boolean,
     showPressure: Boolean
 ) {
+    // Card to display weather details
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
         modifier = Modifier.padding(16.dp)
@@ -91,6 +103,15 @@ fun WeatherDisplay(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Display location name
+            Text(
+                text = weather.name,  // Location name from the API response
+                fontSize = 24.sp,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            // Conditionally display each piece of weather information based on settings
             if (showDescription) {
                 Text(
                     text = stringResource(id = R.string.description_label) + " ${weather.weather[0].description}",
