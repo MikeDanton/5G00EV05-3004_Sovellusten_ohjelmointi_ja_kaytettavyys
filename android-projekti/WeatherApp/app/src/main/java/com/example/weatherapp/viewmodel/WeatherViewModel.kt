@@ -38,6 +38,17 @@ class WeatherViewModel(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> get() = _errorMessage
 
+    private val _isLocationBased = MutableStateFlow(false) // Track location-based requests
+    val isLocationBased: StateFlow<Boolean> get() = _isLocationBased
+
+    // Expose saved latitude and longitude from settingsDataStore
+    val savedLatitude: StateFlow<Double?> = settingsDataStore.lastLatitude.stateIn(
+        viewModelScope, SharingStarted.Lazily, null
+    )
+    val savedLongitude: StateFlow<Double?> = settingsDataStore.lastLongitude.stateIn(
+        viewModelScope, SharingStarted.Lazily, null
+    )
+
     // Load settings from DataStore
     val isCelsius: StateFlow<Boolean> = settingsDataStore.isCelsius.stateIn(viewModelScope, SharingStarted.Lazily, true)
     val showTemperature: StateFlow<Boolean> = settingsDataStore.showTemperature.stateIn(viewModelScope, SharingStarted.Lazily, true)
@@ -47,7 +58,36 @@ class WeatherViewModel(
     val showPressure: StateFlow<Boolean> = settingsDataStore.showPressure.stateIn(viewModelScope, SharingStarted.Lazily, true)
 
     init {
-        fetchWeather()
+        viewModelScope.launch {
+            val savedLatitude = settingsDataStore.lastLatitude.firstOrNull()
+            val savedLongitude = settingsDataStore.lastLongitude.firstOrNull()
+
+            if (savedLatitude != null && savedLongitude != null) {
+                fetchWeatherByCoordinates(savedLatitude, savedLongitude)
+            } else {
+                fetchWeather(defaultCity)
+            }
+        }
+    }
+
+    fun fetchWeatherByCoordinates(latitude: Double, longitude: Double) {
+        _isLoading.value = true
+        _errorMessage.value = null
+        viewModelScope.launch {
+            val units = if (isCelsius.value) "metric" else "imperial"
+            val result = runCatching {
+                withContext(Dispatchers.IO) {
+                    repository.fetchWeatherByCoordinates(latitude, longitude, API_KEY, units)
+                }
+            }
+            result.onSuccess { weatherResponse ->
+                _weather.value = weatherResponse
+                _isLocationBased.value = true // Set to true as this is a location-based fetch
+            }.onFailure {
+                _errorMessage.value = application.getString(R.string.error_message)
+            }
+            _isLoading.value = false
+        }
     }
 
     // Method to get a temperature string with the correct unit
@@ -67,6 +107,7 @@ class WeatherViewModel(
             }
             result.onSuccess { weatherResponse ->
                 _weather.value = weatherResponse
+                _isLocationBased.value = false // Set to false as this is a city-based fetch
             }.onFailure {
                 _errorMessage.value = application.getString(R.string.error_message)
             }
@@ -83,10 +124,16 @@ class WeatherViewModel(
             }
 
             if (location != null) {
+                val latitude = location.latitude
+                val longitude = location.longitude
+
+                // Save the location for future use
+                settingsDataStore.saveLastLocation(latitude, longitude)
+
                 val units = if (isCelsius.value) "metric" else "imperial"
                 val result = runCatching {
                     withContext(Dispatchers.IO) {
-                        repository.fetchWeatherByCoordinates(location.latitude, location.longitude, API_KEY, units)
+                        repository.fetchWeatherByCoordinates(latitude, longitude, API_KEY, units)
                     }
                 }
                 result.onSuccess { weatherResponse ->

@@ -22,12 +22,19 @@ fun WeatherScreen(
     viewModel: WeatherViewModel,
     onNavigateToSettings: () -> Unit,
     onFetchWeatherByLocation: () -> Unit, // Callback to fetch weather by location
-    city: String,
     modifier: Modifier = Modifier
 ) {
-    // Fetch weather for the default city when the screen is first displayed
+    // Collect the saved location data as State
+    val savedLatitude = viewModel.savedLatitude.collectAsState().value
+    val savedLongitude = viewModel.savedLongitude.collectAsState().value
+    val isLocationBased = viewModel.isLocationBased.collectAsState().value
+
     LaunchedEffect(Unit) {
-        viewModel.fetchWeather(city)
+        if (isLocationBased && savedLatitude != null && savedLongitude != null) {
+            viewModel.fetchWeatherByCoordinates(savedLatitude, savedLongitude)
+        } else {
+            viewModel.fetchWeather()
+        }
     }
 
     // Collect UI states from the ViewModel
@@ -65,7 +72,7 @@ fun WeatherScreen(
             errorMessage != null -> {                 // Show error message and retry button
                 Text(text = errorMessage, color = Color.Red)
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = { viewModel.fetchWeather(city) }) {
+                Button(onClick = { viewModel.fetchWeather() }) {
                     Text(stringResource(id = R.string.retry))
                 }
             }

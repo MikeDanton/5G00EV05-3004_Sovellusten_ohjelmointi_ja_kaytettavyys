@@ -2,8 +2,8 @@ package com.example.weatherapp.data
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.preferencesOf
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -23,6 +23,8 @@ class SettingsDataStore(context: Context) {
         val SHOW_DESCRIPTION = booleanPreferencesKey("show_description")
         val SHOW_HUMIDITY = booleanPreferencesKey("show_humidity")
         val SHOW_PRESSURE = booleanPreferencesKey("show_pressure")
+        val LAST_LATITUDE = doublePreferencesKey("last_latitude")
+        val LAST_LONGITUDE = doublePreferencesKey("last_longitude")
     }
 
     // Read settings
@@ -32,6 +34,8 @@ class SettingsDataStore(context: Context) {
     val showDescription: Flow<Boolean> = dataStore.data.map { it[SHOW_DESCRIPTION] ?: true }
     val showHumidity: Flow<Boolean> = dataStore.data.map { it[SHOW_HUMIDITY] ?: true }
     val showPressure: Flow<Boolean> = dataStore.data.map { it[SHOW_PRESSURE] ?: true }
+    val lastLatitude: Flow<Double?> = dataStore.data.map { it[LAST_LATITUDE] } // Flow for latitude
+    val lastLongitude: Flow<Double?> = dataStore.data.map { it[LAST_LONGITUDE] } // Flow for longitude
 
     // Save settings
     suspend fun saveIsCelsius(value: Boolean) {
@@ -56,5 +60,13 @@ class SettingsDataStore(context: Context) {
 
     suspend fun saveShowPressure(value: Boolean) {
         dataStore.edit { it[SHOW_PRESSURE] = value }
+    }
+
+    // Save last known latitude and longitude
+    suspend fun saveLastLocation(latitude: Double, longitude: Double) {
+        dataStore.edit { preferences ->
+            preferences[LAST_LATITUDE] = latitude
+            preferences[LAST_LONGITUDE] = longitude
+        }
     }
 }

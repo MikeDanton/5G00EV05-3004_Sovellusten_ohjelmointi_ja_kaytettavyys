@@ -1,7 +1,6 @@
 package com.example.weatherapp
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.core.content.ContextCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,9 +18,9 @@ import com.example.weatherapp.data.SettingsDataStore
 import com.example.weatherapp.network.LocationHelper
 import com.example.weatherapp.network.NetworkModule
 import com.example.weatherapp.repository.WeatherRepository
+import com.example.weatherapp.ui.screen.SettingsScreen
 import com.example.weatherapp.ui.screen.WeatherScreen
 import com.example.weatherapp.ui.theme.WeatherAppTheme
-import com.example.weatherapp.ui.screen.SettingsScreen
 import com.example.weatherapp.viewmodel.WeatherViewModel
 import com.example.weatherapp.viewmodel.WeatherViewModelFactory
 
@@ -83,8 +81,7 @@ fun WeatherApp(viewModel: WeatherViewModel, checkLocationPermissionAndFetchWeath
                         viewModel = viewModel,
                         modifier = Modifier.padding(padding),
                         onNavigateToSettings = { navController.navigate("settingsScreen") },
-                        onFetchWeatherByLocation = checkLocationPermissionAndFetchWeather,
-                        city = "Tampere"
+                        onFetchWeatherByLocation = checkLocationPermissionAndFetchWeather
                     )
                 }
                 composable("settingsScreen") {
