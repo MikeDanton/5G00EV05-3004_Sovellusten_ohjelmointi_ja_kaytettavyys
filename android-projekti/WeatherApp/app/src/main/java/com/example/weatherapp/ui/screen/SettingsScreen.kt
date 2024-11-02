@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -14,7 +12,7 @@ import com.example.weatherapp.viewmodel.WeatherViewModel
 
 @Composable
 fun SettingsScreen(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
-    val isCelsius = remember { mutableStateOf(viewModel.isCelsius) }
+    val isCelsius = viewModel.isCelsius.collectAsState().value
     val showTemperature = viewModel.showTemperature.collectAsState().value
     val showWindSpeed = viewModel.showWindSpeed.collectAsState().value
     val showDescription = viewModel.showDescription.collectAsState().value
@@ -35,10 +33,9 @@ fun SettingsScreen(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
             Text(text = "Temperature Unit: ")
             Spacer(modifier = Modifier.width(8.dp))
             TextButton(onClick = {
-                isCelsius.value = !isCelsius.value
-                viewModel.setTemperatureUnit(isCelsius.value)
+                viewModel.setTemperatureUnit(!isCelsius)
             }) {
-                Text(if (isCelsius.value) "Celsius" else "Fahrenheit")
+                Text(if (isCelsius) "Celsius" else "Fahrenheit")
             }
         }
 

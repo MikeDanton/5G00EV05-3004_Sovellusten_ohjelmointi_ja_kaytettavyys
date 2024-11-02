@@ -2,16 +2,17 @@ package com.example.weatherapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.data.SettingsDataStore
 import com.example.weatherapp.network.WeatherResponse
 import com.example.weatherapp.repository.WeatherRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class WeatherViewModel(
     private val repository: WeatherRepository,
+    private val settingsDataStore: SettingsDataStore,
     private val defaultCity: String = "Tampere"
 ) : ViewModel() {
 
@@ -28,61 +29,77 @@ class WeatherViewModel(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> get() = _errorMessage
 
-    private val _isCelsius = MutableStateFlow(true)
-    val isCelsius: Boolean get() = _isCelsius.value
-
-    private val _showTemperature = MutableStateFlow(true)
-    val showTemperature: StateFlow<Boolean> = _showTemperature
-
-    private val _showWindSpeed = MutableStateFlow(true)
-    val showWindSpeed: StateFlow<Boolean> = _showWindSpeed
-
-    private val _showDescription = MutableStateFlow(true)
-    val showDescription: StateFlow<Boolean> = _showDescription
-
-    private val _showHumidity = MutableStateFlow(true)
-    val showHumidity: StateFlow<Boolean> = _showHumidity
-
-    private val _showPressure = MutableStateFlow(true)
-    val showPressure: StateFlow<Boolean> = _showPressure
+    // Load settings from DataStore and initialize StateFlows
+    val isCelsius: StateFlow<Boolean> = settingsDataStore.isCelsius.stateIn(
+        viewModelScope, SharingStarted.Lazily, true
+    )
+    val showTemperature: StateFlow<Boolean> = settingsDataStore.showTemperature.stateIn(
+        viewModelScope, SharingStarted.Lazily, true
+    )
+    val showWindSpeed: StateFlow<Boolean> = settingsDataStore.showWindSpeed.stateIn(
+        viewModelScope, SharingStarted.Lazily, true
+    )
+    val showDescription: StateFlow<Boolean> = settingsDataStore.showDescription.stateIn(
+        viewModelScope, SharingStarted.Lazily, true
+    )
+    val showHumidity: StateFlow<Boolean> = settingsDataStore.showHumidity.stateIn(
+        viewModelScope, SharingStarted.Lazily, true
+    )
+    val showPressure: StateFlow<Boolean> = settingsDataStore.showPressure.stateIn(
+        viewModelScope, SharingStarted.Lazily, true
+    )
 
     init {
         fetchWeather() // Optionally fetch on initialization
     }
 
+    // Update DataStore when temperature unit changes
     fun setTemperatureUnit(useCelsius: Boolean) {
-        _isCelsius.value = useCelsius
+        viewModelScope.launch {
+            settingsDataStore.saveIsCelsius(useCelsius)
+        }
     }
 
     fun getTemperatureString(temp: Double): String {
-        return "${temp.toInt()}°${if (_isCelsius.value) "C" else "F"}"
+        return "${temp.toInt()}°${if (isCelsius.value) "C" else "F"}"
     }
 
+    // Toggle visibility settings and save to DataStore
     fun toggleTemperatureVisibility() {
-        _showTemperature.value = !_showTemperature.value
+        viewModelScope.launch {
+            settingsDataStore.saveShowTemperature(!showTemperature.value)
+        }
     }
 
     fun toggleWindSpeedVisibility() {
-        _showWindSpeed.value = !_showWindSpeed.value
+        viewModelScope.launch {
+            settingsDataStore.saveShowWindSpeed(!showWindSpeed.value)
+        }
     }
 
     fun toggleDescriptionVisibility() {
-        _showDescription.value = !_showDescription.value
+        viewModelScope.launch {
+            settingsDataStore.saveShowDescription(!showDescription.value)
+        }
     }
 
     fun toggleHumidityVisibility() {
-        _showHumidity.value = !_showHumidity.value
+        viewModelScope.launch {
+            settingsDataStore.saveShowHumidity(!showHumidity.value)
+        }
     }
 
     fun togglePressureVisibility() {
-        _showPressure.value = !_showPressure.value
+        viewModelScope.launch {
+            settingsDataStore.saveShowPressure(!showPressure.value)
+        }
     }
 
     fun fetchWeather(city: String = defaultCity) {
         _isLoading.value = true
         _errorMessage.value = null
         viewModelScope.launch {
-            val units = if (_isCelsius.value) "metric" else "imperial"
+            val units = if (isCelsius.value) "metric" else "imperial"
             val result = runCatching {
                 withContext(Dispatchers.IO) {
                     repository.fetchWeather(city, API_KEY, units)

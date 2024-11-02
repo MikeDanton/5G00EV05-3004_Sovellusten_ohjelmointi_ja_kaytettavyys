@@ -63,6 +63,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
 
+    // DataStore preferences
+    implementation(libs.datastore.preferences)
+
     // Other dependencies...
     implementation(libs.androidx.navigation.compose)
 

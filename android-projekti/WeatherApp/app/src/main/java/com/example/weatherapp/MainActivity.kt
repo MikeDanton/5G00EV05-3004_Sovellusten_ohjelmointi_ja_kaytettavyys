@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.weatherapp.data.SettingsDataStore
 import com.example.weatherapp.network.NetworkModule
 import com.example.weatherapp.repository.WeatherRepository
 import com.example.weatherapp.ui.screen.WeatherScreen
@@ -22,17 +23,15 @@ import com.example.weatherapp.viewmodel.WeatherViewModelFactory
 
 class MainActivity : ComponentActivity() {
 
-    // Instantiate WeatherRepository with NetworkModule.weatherApiService
     private val weatherRepository by lazy { WeatherRepository(NetworkModule.weatherApiService) }
+    private val settingsDataStore by lazy { SettingsDataStore(this) }
 
     private val viewModel: WeatherViewModel by viewModels {
-        WeatherViewModelFactory(weatherRepository)
+        WeatherViewModelFactory(weatherRepository, settingsDataStore)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-
         setContent {
             WeatherApp(viewModel)
         }
