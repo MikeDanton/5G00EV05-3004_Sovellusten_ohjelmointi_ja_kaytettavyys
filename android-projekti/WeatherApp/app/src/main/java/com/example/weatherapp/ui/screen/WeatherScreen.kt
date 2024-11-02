@@ -22,7 +22,6 @@ fun WeatherScreen(
     city: String,
     modifier: Modifier = Modifier
 ) {
-    // Launch fetchWeather only on first composition
     LaunchedEffect(Unit) {
         viewModel.fetchWeather(city)
     }
@@ -30,6 +29,12 @@ fun WeatherScreen(
     val weather = viewModel.weather.collectAsState().value
     val isLoading = viewModel.isLoading.collectAsState().value
     val errorMessage = viewModel.errorMessage.collectAsState().value
+
+    val showTemperature = viewModel.showTemperature.collectAsState().value
+    val showWindSpeed = viewModel.showWindSpeed.collectAsState().value
+    val showDescription = viewModel.showDescription.collectAsState().value
+    val showHumidity = viewModel.showHumidity.collectAsState().value
+    val showPressure = viewModel.showPressure.collectAsState().value
 
     Column(
         modifier = modifier
@@ -51,13 +56,30 @@ fun WeatherScreen(
                     Text("Retry")
                 }
             }
-            weather != null -> WeatherDisplay(viewModel, weather)
+            weather != null -> WeatherDisplay(
+                viewModel = viewModel,
+                weather = weather,
+                showTemperature = showTemperature,
+                showWindSpeed = showWindSpeed,
+                showDescription = showDescription,
+                showHumidity = showHumidity,
+                showPressure = showPressure
+            )
         }
     }
 }
 
+
 @Composable
-fun WeatherDisplay(viewModel: WeatherViewModel, weather: WeatherResponse) {
+fun WeatherDisplay(
+    viewModel: WeatherViewModel,
+    weather: WeatherResponse,
+    showTemperature: Boolean,
+    showWindSpeed: Boolean,
+    showDescription: Boolean,
+    showHumidity: Boolean,
+    showPressure: Boolean
+) {
     Card(
         elevation = CardDefaults.cardElevation(4.dp),
         modifier = Modifier.padding(16.dp)
@@ -68,12 +90,24 @@ fun WeatherDisplay(viewModel: WeatherViewModel, weather: WeatherResponse) {
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Description: ${weather.weather[0].description}", fontSize = 20.sp)
-            Text(
-                text = "Temperature: ${viewModel.getTemperatureString(weather.main.temp)}",
-                fontSize = 20.sp
-            )
-            Text(text = "Wind Speed: ${weather.wind.speed} m/s", fontSize = 20.sp)
+            if (showDescription) {
+                Text(text = "Description: ${weather.weather[0].description}", fontSize = 20.sp)
+            }
+            if (showTemperature) {
+                Text(
+                    text = "Temperature: ${viewModel.getTemperatureString(weather.main.temp)}",
+                    fontSize = 20.sp
+                )
+            }
+            if (showWindSpeed) {
+                Text(text = "Wind Speed: ${weather.wind.speed} m/s", fontSize = 20.sp)
+            }
+            if (showHumidity) {
+                Text(text = "Humidity: ${weather.main.humidity}%", fontSize = 20.sp)
+            }
+            if (showPressure) {
+                Text(text = "Pressure: ${weather.main.pressure} hPa", fontSize = 20.sp)
+            }
         }
     }
 }

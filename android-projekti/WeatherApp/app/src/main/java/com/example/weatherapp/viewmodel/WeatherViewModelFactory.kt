@@ -2,15 +2,15 @@ package com.example.weatherapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.weatherapp.network.WeatherApiService
+import com.example.weatherapp.repository.WeatherRepository
 
 class WeatherViewModelFactory(
-    private val weatherApiService: WeatherApiService,
+    private val repository: WeatherRepository,
     private val defaultCity: String = "Tampere"
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {  // Remove `?` in <T : ViewModel?>
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(WeatherViewModel::class.java)) {
-            return WeatherViewModel(weatherApiService, defaultCity) as T
+            return WeatherViewModel(repository, defaultCity) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
