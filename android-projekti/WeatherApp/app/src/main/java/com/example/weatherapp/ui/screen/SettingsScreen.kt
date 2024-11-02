@@ -6,8 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.weatherapp.R
 import com.example.weatherapp.viewmodel.WeatherViewModel
 
 @Composable
@@ -26,16 +28,20 @@ fun SettingsScreen(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        Text(text = "Settings", fontSize = 24.sp, modifier = Modifier.padding(bottom = 16.dp))
+        Text(
+            text = stringResource(id = R.string.settings),
+            fontSize = 24.sp,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
 
         // Temperature Unit Toggle
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Temperature Unit: ")
+            Text(text = stringResource(id = R.string.temperature_unit))
             Spacer(modifier = Modifier.width(8.dp))
             TextButton(onClick = {
                 viewModel.setTemperatureUnit(!isCelsius)
             }) {
-                Text(if (isCelsius) "Celsius" else "Fahrenheit")
+                Text(text = stringResource(id = if (isCelsius) R.string.celsius else R.string.fahrenheit))
             }
         }
 
@@ -44,27 +50,27 @@ fun SettingsScreen(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {
         // Show/Hide Data Toggles
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = showTemperature, onCheckedChange = { viewModel.toggleTemperatureVisibility() })
-            Text(text = "Show Temperature", modifier = Modifier.padding(start = 8.dp))
+            Text(text = stringResource(id = R.string.show_temperature), modifier = Modifier.padding(start = 8.dp))
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = showWindSpeed, onCheckedChange = { viewModel.toggleWindSpeedVisibility() })
-            Text(text = "Show Wind Speed", modifier = Modifier.padding(start = 8.dp))
+            Text(text = stringResource(id = R.string.show_wind_speed), modifier = Modifier.padding(start = 8.dp))
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = showDescription, onCheckedChange = { viewModel.toggleDescriptionVisibility() })
-            Text(text = "Show Description", modifier = Modifier.padding(start = 8.dp))
+            Text(text = stringResource(id = R.string.show_description), modifier = Modifier.padding(start = 8.dp))
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = showHumidity, onCheckedChange = { viewModel.toggleHumidityVisibility() })
-            Text(text = "Show Humidity", modifier = Modifier.padding(start = 8.dp))
+            Text(text = stringResource(id = R.string.show_humidity), modifier = Modifier.padding(start = 8.dp))
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = showPressure, onCheckedChange = { viewModel.togglePressureVisibility() })
-            Text(text = "Show Pressure", modifier = Modifier.padding(start = 8.dp))
+            Text(text = stringResource(id = R.string.show_pressure), modifier = Modifier.padding(start = 8.dp))
         }
 
         Spacer(modifier = Modifier.height(24.dp))

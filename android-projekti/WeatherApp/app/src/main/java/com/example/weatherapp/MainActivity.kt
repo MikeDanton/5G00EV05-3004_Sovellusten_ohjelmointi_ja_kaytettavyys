@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
     private val settingsDataStore by lazy { SettingsDataStore(this) }
 
     private val viewModel: WeatherViewModel by viewModels {
-        WeatherViewModelFactory(weatherRepository, settingsDataStore)
+        WeatherViewModelFactory(weatherRepository, settingsDataStore, application)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

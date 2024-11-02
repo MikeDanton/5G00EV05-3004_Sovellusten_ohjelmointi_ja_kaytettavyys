@@ -10,8 +10,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.weatherapp.R
 import com.example.weatherapp.viewmodel.WeatherViewModel
 import com.example.weatherapp.network.WeatherResponse
 
@@ -44,7 +46,7 @@ fun WeatherScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         IconButton(onClick = onNavigateToSettings) {
-            Icon(Icons.Default.Settings, contentDescription = "Settings")
+            Icon(Icons.Default.Settings, contentDescription = stringResource(id = R.string.settings))
         }
 
         when {
@@ -53,7 +55,7 @@ fun WeatherScreen(
                 Text(text = errorMessage, color = Color.Red)
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(onClick = { viewModel.fetchWeather(city) }) {
-                    Text("Retry")
+                    Text(stringResource(id = R.string.retry))
                 }
             }
             weather != null -> WeatherDisplay(
@@ -68,7 +70,6 @@ fun WeatherScreen(
         }
     }
 }
-
 
 @Composable
 fun WeatherDisplay(
@@ -91,22 +92,34 @@ fun WeatherDisplay(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (showDescription) {
-                Text(text = "Description: ${weather.weather[0].description}", fontSize = 20.sp)
+                Text(
+                    text = stringResource(id = R.string.description_label) + " ${weather.weather[0].description}",
+                    fontSize = 20.sp
+                )
             }
             if (showTemperature) {
                 Text(
-                    text = "Temperature: ${viewModel.getTemperatureString(weather.main.temp)}",
+                    text = stringResource(id = R.string.temperature_label) + " ${viewModel.getTemperatureString(weather.main.temp)}",
                     fontSize = 20.sp
                 )
             }
             if (showWindSpeed) {
-                Text(text = "Wind Speed: ${weather.wind.speed} m/s", fontSize = 20.sp)
+                Text(
+                    text = stringResource(id = R.string.wind_speed_label) + " ${weather.wind.speed} m/s",
+                    fontSize = 20.sp
+                )
             }
             if (showHumidity) {
-                Text(text = "Humidity: ${weather.main.humidity}%", fontSize = 20.sp)
+                Text(
+                    text = stringResource(id = R.string.humidity_label) + " ${weather.main.humidity}%",
+                    fontSize = 20.sp
+                )
             }
             if (showPressure) {
-                Text(text = "Pressure: ${weather.main.pressure} hPa", fontSize = 20.sp)
+                Text(
+                    text = stringResource(id = R.string.pressure_label) + " ${weather.main.pressure} hPa",
+                    fontSize = 20.sp
+                )
             }
         }
     }
