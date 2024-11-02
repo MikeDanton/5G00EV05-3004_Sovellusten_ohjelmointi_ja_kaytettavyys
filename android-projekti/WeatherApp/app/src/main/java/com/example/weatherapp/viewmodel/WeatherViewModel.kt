@@ -1,4 +1,4 @@
-package com.example.weatherapp
+package com.example.weatherapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,7 +30,6 @@ class WeatherViewModel(
     private val _isCelsius = MutableStateFlow(true)
     val isCelsius: Boolean get() = _isCelsius.value
 
-    // Set temperature unit preference
     fun setTemperatureUnit(useCelsius: Boolean) {
         _isCelsius.value = useCelsius
     }

@@ -1,4 +1,4 @@
-package com.example.weatherapp.ui.theme
+package com.example.weatherapp.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.weatherapp.WeatherViewModel
+import com.example.weatherapp.viewmodel.WeatherViewModel
 
 @Composable
 fun SettingsScreen(viewModel: WeatherViewModel, modifier: Modifier = Modifier) {

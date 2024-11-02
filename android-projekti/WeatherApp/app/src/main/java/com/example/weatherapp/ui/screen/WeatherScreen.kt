@@ -1,4 +1,4 @@
-package com.example.weatherapp
+package com.example.weatherapp.ui.screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.weatherapp.viewmodel.WeatherViewModel
 import com.example.weatherapp.network.WeatherResponse
 
 @Composable

@@ -13,8 +13,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.weatherapp.network.NetworkModule
+import com.example.weatherapp.ui.screen.WeatherScreen
 import com.example.weatherapp.ui.theme.WeatherAppTheme
-import com.example.weatherapp.ui.theme.SettingsScreen
+import com.example.weatherapp.ui.screen.SettingsScreen
+import com.example.weatherapp.viewmodel.WeatherViewModel
+import com.example.weatherapp.viewmodel.WeatherViewModelFactory
 
 class MainActivity : ComponentActivity() {
 
