@@ -11,16 +11,14 @@ class WeatherViewModelFactory(
     private val repository: WeatherRepository,
     private val settingsDataStore: SettingsDataStore,
     private val application: Application,
-    private val locationHelper: LocationHelper, // Added LocationHelper parameter
-    private val defaultCity: String = "Tampere"
+    private val locationHelper: LocationHelper
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(WeatherViewModel::class.java) -> {
-                WeatherViewModel(repository, settingsDataStore, application, defaultCity, locationHelper) as T
+                WeatherViewModel(repository, settingsDataStore, application, locationHelper) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
-
 }

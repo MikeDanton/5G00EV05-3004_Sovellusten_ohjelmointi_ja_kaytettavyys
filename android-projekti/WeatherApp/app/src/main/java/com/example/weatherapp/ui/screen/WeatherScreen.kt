@@ -22,6 +22,7 @@ fun WeatherScreen(
     viewModel: WeatherViewModel,
     onNavigateToSettings: () -> Unit,
     onFetchWeatherByLocation: () -> Unit, // Callback to fetch weather by location
+    onSelectLocation: () -> Unit,         // Callback to select location on map
     modifier: Modifier = Modifier
 ) {
     // Collect the saved location data as State
@@ -33,7 +34,7 @@ fun WeatherScreen(
         if (isLocationBased && savedLatitude != null && savedLongitude != null) {
             viewModel.fetchWeatherByCoordinates(savedLatitude, savedLongitude)
         } else {
-            viewModel.fetchWeather()
+            viewModel.setErrorMessage("No location data available.") // Update error directly
         }
     }
 
@@ -58,7 +59,14 @@ fun WeatherScreen(
     ) {
         // Settings Icon Button
         IconButton(onClick = onNavigateToSettings) {
-            Icon(Icons.Default.Settings, contentDescription = stringResource(id = R.string.settings))
+            Icon(
+                Icons.Default.Settings,
+                contentDescription = stringResource(id = R.string.settings)
+            )
+        }
+
+        Button(onClick = { onSelectLocation() }, modifier = Modifier.padding(vertical = 8.dp)) {
+            Text("Select Location on Map")
         }
 
         // Button to fetch weather by current location
@@ -72,10 +80,11 @@ fun WeatherScreen(
             errorMessage != null -> {                 // Show error message and retry button
                 Text(text = errorMessage, color = Color.Red)
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = { viewModel.fetchWeather() }) {
+                Button(onClick = onFetchWeatherByLocation) {
                     Text(stringResource(id = R.string.retry))
                 }
             }
+
             weather != null -> WeatherDisplay(        // Show weather data
                 viewModel = viewModel,
                 weather = weather,
@@ -127,7 +136,11 @@ fun WeatherDisplay(
             }
             if (showTemperature) {
                 Text(
-                    text = stringResource(id = R.string.temperature_label) + " ${viewModel.getTemperatureString(weather.main.temp)}",
+                    text = stringResource(id = R.string.temperature_label) + " ${
+                        viewModel.getTemperatureString(
+                            weather.main.temp
+                        )
+                    }",
                     fontSize = 20.sp
                 )
             }

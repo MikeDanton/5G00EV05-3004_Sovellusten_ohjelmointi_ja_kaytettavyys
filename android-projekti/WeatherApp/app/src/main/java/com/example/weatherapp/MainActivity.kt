@@ -1,6 +1,8 @@
 package com.example.weatherapp
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -47,10 +49,29 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    // Register the launcher for selecting a location on the map
+    private val mapLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // Assume the map activity returns selected latitude and longitude as extras
+                val selectedLatitude = result.data?.getDoubleExtra("selectedLatitude", 0.0)
+                val selectedLongitude = result.data?.getDoubleExtra("selectedLongitude", 0.0)
+                if (selectedLatitude != null && selectedLongitude != null) {
+                    viewModel.saveSelectedLocation(selectedLatitude, selectedLongitude)
+                } else {
+                    Toast.makeText(this, "No location selected.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            WeatherApp(viewModel, ::checkLocationPermissionAndFetchWeather)
+            WeatherApp(
+                viewModel,
+                ::checkLocationPermissionAndFetchWeather,
+                ::openMapForLocationSelection
+            )
         }
     }
 
@@ -64,10 +85,21 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
+
+    // Function to open the map for selecting a location
+    private fun openMapForLocationSelection() {
+        // Intent to open map, customized for the specific map activity you’re using
+        val intent = Intent(Intent.ACTION_VIEW) // Replace with actual intent for map selection
+        mapLauncher.launch(intent)
+    }
 }
 
 @Composable
-fun WeatherApp(viewModel: WeatherViewModel, checkLocationPermissionAndFetchWeather: () -> Unit) {
+fun WeatherApp(
+    viewModel: WeatherViewModel,
+    checkLocationPermissionAndFetchWeather: () -> Unit,
+    openMapForLocationSelection: () -> Unit
+) {
     WeatherAppTheme {
         val navController = rememberNavController()
 
@@ -81,7 +113,8 @@ fun WeatherApp(viewModel: WeatherViewModel, checkLocationPermissionAndFetchWeath
                         viewModel = viewModel,
                         modifier = Modifier.padding(padding),
                         onNavigateToSettings = { navController.navigate("settingsScreen") },
-                        onFetchWeatherByLocation = checkLocationPermissionAndFetchWeather
+                        onFetchWeatherByLocation = checkLocationPermissionAndFetchWeather,
+                        onSelectLocation = openMapForLocationSelection
                     )
                 }
                 composable("settingsScreen") {

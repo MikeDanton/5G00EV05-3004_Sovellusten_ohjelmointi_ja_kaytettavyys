@@ -1,9 +1,7 @@
 package com.example.weatherapp.viewmodel
 
 import android.app.Application
-import android.content.Intent
 import android.location.Location
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.R
@@ -21,7 +19,6 @@ class WeatherViewModel(
     private val repository: WeatherRepository,
     private val settingsDataStore: SettingsDataStore,
     private val application: Application,
-    private val defaultCity: String = "Tampere",
     private val locationHelper: LocationHelper
 ) : ViewModel() {
 
@@ -65,7 +62,7 @@ class WeatherViewModel(
             if (savedLatitude != null && savedLongitude != null) {
                 fetchWeatherByCoordinates(savedLatitude, savedLongitude)
             } else {
-                fetchWeather(defaultCity)
+                _errorMessage.value = application.getString(R.string.error_no_location)
             }
         }
     }
@@ -83,31 +80,6 @@ class WeatherViewModel(
             result.onSuccess { weatherResponse ->
                 _weather.value = weatherResponse
                 _isLocationBased.value = true // Set to true as this is a location-based fetch
-            }.onFailure {
-                _errorMessage.value = application.getString(R.string.error_message)
-            }
-            _isLoading.value = false
-        }
-    }
-
-    // Method to get a temperature string with the correct unit
-    fun getTemperatureString(temp: Double): String {
-        return "${temp.toInt()}°${if (isCelsius.value) "C" else "F"}"
-    }
-
-    fun fetchWeather(city: String = defaultCity) {
-        _isLoading.value = true
-        _errorMessage.value = null
-        viewModelScope.launch {
-            val units = if (isCelsius.value) "metric" else "imperial"
-            val result = runCatching {
-                withContext(Dispatchers.IO) {
-                    repository.fetchWeather(city, API_KEY, units)
-                }
-            }
-            result.onSuccess { weatherResponse ->
-                _weather.value = weatherResponse
-                _isLocationBased.value = false // Set to false as this is a city-based fetch
             }.onFailure {
                 _errorMessage.value = application.getString(R.string.error_message)
             }
@@ -148,16 +120,15 @@ class WeatherViewModel(
         }
     }
 
-    fun openMapForLocation(latitude: Double, longitude: Double) {
-        val geoUri = Uri.parse("geo:$latitude,$longitude?q=weather")
-        val mapIntent = Intent(Intent.ACTION_VIEW, geoUri)
-        mapIntent.setPackage("com.google.android.apps.maps")
-        if (mapIntent.resolveActivity(application.packageManager) != null) {
-            application.startActivity(mapIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-        }
+    fun getTemperatureString(temp: Double): String {
+        return "${temp.toInt()}°${if (isCelsius.value) "C" else "F"}"
     }
 
-    // Methods for settings
+    fun setErrorMessage(message: String) {
+        _errorMessage.value = message
+    }
+
+    // Methods to toggle visibility settings and update DataStore values
     fun setTemperatureUnit(useCelsius: Boolean) {
         viewModelScope.launch {
             settingsDataStore.saveIsCelsius(useCelsius)
@@ -166,8 +137,8 @@ class WeatherViewModel(
 
     fun toggleTemperatureVisibility() {
         viewModelScope.launch {
-            val currentState = showTemperature.first() // Get the current value
-            settingsDataStore.saveShowTemperature(!currentState) // Toggle the value
+            val currentState = showTemperature.first()
+            settingsDataStore.saveShowTemperature(!currentState)
         }
     }
 
@@ -198,4 +169,16 @@ class WeatherViewModel(
             settingsDataStore.saveShowPressure(!currentState)
         }
     }
+
+    fun saveSelectedLocation(latitude: Double?, longitude: Double?) {
+        viewModelScope.launch {
+            if (latitude != null && longitude != null) {
+                settingsDataStore.saveLastLocation(latitude, longitude)
+                fetchWeatherByCoordinates(latitude, longitude)
+            } else {
+                setErrorMessage("No location selected.")
+            }
+        }
+    }
+
 }
