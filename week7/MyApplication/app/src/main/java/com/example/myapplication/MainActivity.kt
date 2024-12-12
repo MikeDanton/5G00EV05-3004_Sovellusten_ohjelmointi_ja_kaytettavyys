@@ -1,8 +1,7 @@
 package com.example.myapplication
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -11,25 +10,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class CounterViewModel : ViewModel() {
-    // Private MutableLiveData to keep the counter value
-    private val _counter = MutableLiveData(0)
-    // Public LiveData to expose the counter value to observers
-    val counter: LiveData<Int> get() = _counter
+class TimerViewModel : ViewModel() {
 
-    // Method to increase the counter
-    fun increase() {
-        _counter.value = (_counter.value ?: 0) + 1
-    }
+    private val _seconds = MutableStateFlow(0)
+    val seconds = _seconds.asStateFlow()
 
-    // Method to decrease the counter
-    fun decrease() {
-        _counter.value = (_counter.value ?: 0) - 1
+    init {
+        // Start the timer in viewModelScope
+        viewModelScope.launch {
+            while (true) {
+                delay(1000L)
+                _seconds.value += 1
+            }
+        }
     }
 }
 
@@ -38,43 +39,29 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                CounterScreen()
+                TimerScreen()
             }
         }
     }
 }
 
 @Composable
-fun CounterScreen(counterViewModel: CounterViewModel = viewModel()) {
-    val counter by counterViewModel.counter.observeAsState(0)
+fun TimerScreen(timerViewModel: TimerViewModel = viewModel()) {
 
-    // Layout for the counter UI
+    val seconds by timerViewModel.seconds.collectAsState()
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Counter: $counter",
+            text = "Seconds: $seconds",
             fontSize = 24.sp
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row {
-            Button(
-                onClick = { counterViewModel.increase() },
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text("Kasvata")
-            }
-
-            Button(
-                onClick = { counterViewModel.decrease() },
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text("Pienennä")
-            }
-        }
+        Text("The timer is running automatically.")
     }
 }

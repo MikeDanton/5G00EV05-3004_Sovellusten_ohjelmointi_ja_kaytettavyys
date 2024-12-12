@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
     private val mapLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                // Assume the map activity returns selected latitude and longitude as extras
+
                 val selectedLatitude = result.data?.getDoubleExtra("selectedLatitude", 0.0)
                 val selectedLongitude = result.data?.getDoubleExtra("selectedLongitude", 0.0)
                 if (selectedLatitude != null && selectedLongitude != null) {
@@ -88,8 +88,8 @@ class MainActivity : ComponentActivity() {
 
     // Function to open the map for selecting a location
     private fun openMapForLocationSelection() {
-        // Intent to open map, customized for the specific map activity you’re using
-        val intent = Intent(Intent.ACTION_VIEW) // Replace with actual intent for map selection
+
+        val intent = Intent(Intent.ACTION_VIEW)
         mapLauncher.launch(intent)
     }
 }
